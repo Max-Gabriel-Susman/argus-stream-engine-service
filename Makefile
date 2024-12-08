@@ -14,3 +14,6 @@ tag:
 
 push: 
 	docker push brometheus/argus-stream-engine-service:latest
+
+test: 
+	go test ./...

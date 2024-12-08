@@ -20,3 +20,8 @@ old_go.mod
 
 vendor/
 videos/
+
+scripts/ 
+cloudformation/
+
+argus-stream-engine-service-deployment.yaml
