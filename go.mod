@@ -1,4 +1,4 @@
-module github.com/Max-Gabriel-Susman/argus-rtmp-service
+module github.com/Max-Gabriel-Susman/argus-stream-engine-service
 
 go 1.22.0
 
