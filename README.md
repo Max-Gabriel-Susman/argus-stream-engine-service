@@ -2,6 +2,10 @@
 
 The Argus Stream Engine Service Transforms incoming RTMP streams from ingress clients into HLS streams for egress clients. 
 
+## Local Setup
+
+*.mp4 files may be included in the videos directory
+
 ## Docker 
 
 You can find the docker image for this project available in Docker Hub: [https://hub.docker.com/r/brometheus/argus-stream-engine-service](https://hub.docker.com/r/brometheus/argus-stream-engine-service)
