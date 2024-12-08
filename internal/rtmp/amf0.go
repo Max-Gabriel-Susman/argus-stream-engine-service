@@ -1,6 +1,4 @@
-// Encoding / Decoding for AMF0
-
-package main
+package rtmp
 
 import (
 	"encoding/binary"

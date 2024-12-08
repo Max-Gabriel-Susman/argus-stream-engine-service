@@ -1,6 +1,4 @@
-// RTMP server
-
-package main
+package rtmp
 
 import (
 	"os"
@@ -8,8 +6,6 @@ import (
 	"strconv"
 	"strings"
 )
-
-/* Constants */
 
 const N_CHUNK_STREAM = 8
 const RTMP_VERSION = 3

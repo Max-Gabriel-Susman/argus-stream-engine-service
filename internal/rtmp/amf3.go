@@ -1,6 +1,4 @@
-// Encoding / Decoding for AMF3
-
-package main
+package rtmp
 
 import (
 	"encoding/binary"

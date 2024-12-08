@@ -1,6 +1,4 @@
-// RTMP server
-
-package main
+package rtmp
 
 import (
 	"crypto/subtle"
@@ -14,12 +12,13 @@ import (
 	"time"
 
 	tls_certificate_loader "github.com/AgustinSRG/go-tls-certificate-loader"
+	"github.com/Max-Gabriel-Susman/argus-stream-engine-service/internal/logging"
 )
 
 type RTMPChannel struct {
 	channel       string
 	key           string
-	stream_id     string
+	StreamID      string
 	publisher     uint64
 	is_publishing bool
 	players       map[uint64]bool
@@ -89,11 +88,11 @@ func CreateRTMPServer() *RTMPServer {
 
 	lTCP, errTCP := net.Listen("tcp", bind_addr+":"+strconv.Itoa(tcp_port))
 	if errTCP != nil {
-		LogError(errTCP)
+		logging.LogError(errTCP)
 		return nil
 	} else {
 		server.listener = lTCP
-		LogInfo("[RTMP] Listing on " + bind_addr + ":" + strconv.Itoa(tcp_port))
+		logging.LogInfo("[RTMP] Listing on " + bind_addr + ":" + strconv.Itoa(tcp_port))
 	}
 
 	// Setup RTMPS server
@@ -130,15 +129,15 @@ func CreateRTMPServer() *RTMPServer {
 			KeyPath:           keyFile,
 			CheckReloadPeriod: time.Duration(checkReloadSeconds) * time.Second,
 			OnReload: func() {
-				LogInfo("Reloaded SSL certificates")
+				logging.LogInfo("Reloaded SSL certificates")
 			},
 			OnError: func(err error) {
-				LogError(err)
+				logging.LogError(err)
 			},
 		})
 
 		if err != nil {
-			LogError(err)
+			logging.LogError(err)
 			if server.listener != nil {
 				server.listener.Close()
 			}
@@ -153,11 +152,11 @@ func CreateRTMPServer() *RTMPServer {
 
 		if errSSL != nil {
 			cerLoader.Close()
-			LogError(errSSL)
+			logging.LogError(errSSL)
 			return nil
 		} else {
 			server.secureListener = lnSSL
-			LogInfo("[SSL] Listening on " + bind_addr + ":" + strconv.Itoa(ssl_port))
+			logging.LogInfo("[SSL] Listening on " + bind_addr + ":" + strconv.Itoa(ssl_port))
 		}
 	}
 
@@ -198,7 +197,7 @@ func (server *RTMPServer) isIPExempted(ipStr string) bool {
 		_, rang, e := net.ParseCIDR(parts[i])
 
 		if e != nil {
-			LogError(e)
+			logging.LogError(e)
 			continue
 		}
 
@@ -269,7 +268,7 @@ func (server *RTMPServer) GetPublisher(channel string) *RTMPSession {
 	return server.sessions[id]
 }
 
-func (server *RTMPServer) SetPublisher(channel string, key string, stream_id string, s *RTMPSession) bool {
+func (server *RTMPServer) SetPublisher(channel string, key string, StreamID string, s *RTMPSession) bool {
 	server.mutex.Lock()
 	defer server.mutex.Unlock()
 
@@ -281,7 +280,7 @@ func (server *RTMPServer) SetPublisher(channel string, key string, stream_id str
 		c := RTMPChannel{
 			channel:       channel,
 			key:           key,
-			stream_id:     stream_id,
+			StreamID:      StreamID,
 			is_publishing: true,
 			publisher:     s.id,
 			players:       make(map[uint64]bool),
@@ -289,7 +288,7 @@ func (server *RTMPServer) SetPublisher(channel string, key string, stream_id str
 		server.channels[channel] = &c
 	} else {
 		server.channels[channel].key = key
-		server.channels[channel].stream_id = stream_id
+		server.channels[channel].StreamID = StreamID
 		server.channels[channel].is_publishing = true
 		server.channels[channel].publisher = s.id
 	}
@@ -375,7 +374,7 @@ func (server *RTMPServer) AddPlayer(channel string, key string, s *RTMPSession) 
 		c := RTMPChannel{
 			channel:       channel,
 			key:           key,
-			stream_id:     "",
+			StreamID:      "",
 			is_publishing: false,
 			publisher:     0,
 			players:       make(map[uint64]bool),
@@ -421,7 +420,7 @@ func (server *RTMPServer) AcceptConnections(listener net.Listener, wg *sync.Wait
 	for {
 		c, err := listener.Accept()
 		if err != nil {
-			LogError(err)
+			logging.LogError(err)
 			return
 		}
 		id := server.NextSessionID()
@@ -435,12 +434,12 @@ func (server *RTMPServer) AcceptConnections(listener net.Listener, wg *sync.Wait
 		if !server.isIPExempted(ip) {
 			if !server.AddIP(ip) {
 				c.Close()
-				LogRequest(id, ip, "Connection rejected: Too many requests")
+				logging.LogRequest(id, ip, "Connection rejected: Too many requests")
 				continue
 			}
 		}
 
-		LogDebugSession(id, ip, "Connection accepted!")
+		logging.LogDebugSession(id, ip, "Connection accepted!")
 		go server.HandleConnection(id, ip, c)
 	}
 }
@@ -489,18 +488,18 @@ func (server *RTMPServer) HandleConnection(id uint64, ip string, c net.Conn) {
 		if err := recover(); err != nil {
 			switch x := err.(type) {
 			case string:
-				LogRequest(id, ip, "Error: "+x)
+				logging.LogRequest(id, ip, "Error: "+x)
 			case error:
-				LogRequest(id, ip, "Error: "+x.Error())
+				logging.LogRequest(id, ip, "Error: "+x.Error())
 			default:
-				LogRequest(id, ip, "Connection Crashed!")
+				logging.LogRequest(id, ip, "Connection Crashed!")
 			}
 		}
 		s.OnClose()
 		c.Close()
 		server.RemoveSession(id)
 		server.RemoveIP(ip)
-		LogDebugSession(id, ip, "Connection closed!")
+		logging.LogDebugSession(id, ip, "Connection closed!")
 	}()
 
 	s.HandleSession()

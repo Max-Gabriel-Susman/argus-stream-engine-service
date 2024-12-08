@@ -1,10 +1,10 @@
-// RTMP session publisher methods
-
-package main
+package rtmp
 
 import (
 	"container/list"
 	"crypto/subtle"
+
+	"github.com/Max-Gabriel-Susman/argus-stream-engine-service/internal/logging"
 )
 
 func (s *RTMPSession) StartIdlePlayers() {
@@ -18,7 +18,7 @@ func (s *RTMPSession) StartIdlePlayers() {
 		if subtle.ConstantTimeCompare([]byte(s.key), []byte(idlePlayers[i].key)) == 1 {
 			player := idlePlayers[i]
 
-			LogRequest(player.id, player.ip, "PLAY START '"+player.channel+"'")
+			logging.LogRequest(player.id, player.ip, "PLAY START '"+player.channel+"'")
 
 			player.SendMetadata(s.metaData, 0)
 			player.SendAudioCodecHeader(s.audioCodec, s.aacSequenceHeader, 0)
@@ -43,7 +43,7 @@ func (s *RTMPSession) StartIdlePlayers() {
 				s.gopCacheDisabled = true
 			}
 		} else {
-			LogRequest(idlePlayers[i].id, idlePlayers[i].ip, "Error: Invalid stream key provided")
+			logging.LogRequest(idlePlayers[i].id, idlePlayers[i].ip, "Error: Invalid stream key provided")
 			idlePlayers[i].SendStatusMessage(s.playStreamId, "error", "NetStream.Play.BadName", "Invalid stream key provided")
 			idlePlayers[i].Kill()
 		}
@@ -58,11 +58,11 @@ func (s *RTMPSession) StartPlayer(player *RTMPSession) {
 	if !s.isPublishing {
 		player.isPlaying = false
 		player.isIdling = true
-		LogRequest(player.id, player.ip, "PLAY IDLE '"+player.channel+"'")
+		logging.LogRequest(player.id, player.ip, "PLAY IDLE '"+player.channel+"'")
 		return
 	}
 
-	LogRequest(player.id, player.ip, "PLAY START '"+player.channel+"'")
+	logging.LogRequest(player.id, player.ip, "PLAY START '"+player.channel+"'")
 
 	player.SendMetadata(s.metaData, 0)
 	player.SendAudioCodecHeader(s.audioCodec, s.aacSequenceHeader, 0)
@@ -102,7 +102,7 @@ func (s *RTMPSession) EndPublish(isClose bool) {
 
 	if s.isPublishing {
 
-		LogRequest(s.id, s.ip, "PUBLISH END '"+s.channel+"'")
+		logging.LogRequest(s.id, s.ip, "PUBLISH END '"+s.channel+"'")
 
 		if !isClose {
 			s.SendStatusMessage(s.publishStreamId, "status", "NetStream.Unpublish.Success", s.GetStreamPath()+" is now unpublished.")
@@ -113,7 +113,7 @@ func (s *RTMPSession) EndPublish(isClose bool) {
 		for i := 0; i < len(players); i++ {
 			players[i].isIdling = true
 			players[i].isPlaying = false
-			LogRequest(players[i].id, players[i].ip, "PLAY IDLE '"+players[i].channel+"'")
+			logging.LogRequest(players[i].id, players[i].ip, "PLAY IDLE '"+players[i].channel+"'")
 			players[i].SendStatusMessage(players[i].playStreamId, "status", "NetStream.Play.UnpublishNotify", "stream is now unpublished.")
 			players[i].SendStreamStatus(STREAM_EOF, players[i].playStreamId)
 		}
@@ -126,9 +126,9 @@ func (s *RTMPSession) EndPublish(isClose bool) {
 
 		// Send event
 		if s.SendStopCallback() {
-			LogDebugSession(s.id, s.ip, "Stop event sent")
+			logging.LogDebugSession(s.id, s.ip, "Stop event sent")
 		} else {
-			LogDebugSession(s.id, s.ip, "Could not send stop event")
+			logging.LogDebugSession(s.id, s.ip, "Could not send stop event")
 		}
 	}
 }

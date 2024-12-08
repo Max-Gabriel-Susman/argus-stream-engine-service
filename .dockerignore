@@ -1,13 +1,7 @@
-# Ignore binaries
-
-rtmp-server
-rtmp-server.exe
-
-# Ignore temp files
-
 temp
-
-# Ignore .env
-
 .env
 *.log
+videos/ 
+vendor/
+scripts/
+argus-stream-engine-service-deployment.yaml

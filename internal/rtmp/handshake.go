@@ -1,11 +1,11 @@
-// RTMP Handshake
-
-package main
+package rtmp
 
 import (
 	"crypto/hmac"
 	"crypto/rand"
 	"crypto/sha256"
+
+	"github.com/Max-Gabriel-Susman/argus-stream-engine-service/internal/logging"
 )
 
 const MESSAGE_FORMAT_0 = 0
@@ -236,11 +236,11 @@ func generateS0S1S2(clientsig []byte) []byte {
 	messageFormat = detectClientMessageFormat(clientsig)
 
 	if messageFormat == MESSAGE_FORMAT_0 {
-		LogDebug("Using basic handshake")
+		logging.LogDebug("Using basic handshake")
 		allBytes = append(clientType, clientsig...)
 		allBytes = append(allBytes, clientsig...)
 	} else {
-		LogDebug("Using S1S2 handshake")
+		logging.LogDebug("Using S1S2 handshake")
 		s1 := generateS1(messageFormat)
 		s2 := generateS2(messageFormat, clientsig)
 		allBytes = append(clientType, s1...)

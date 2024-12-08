@@ -1,6 +1,4 @@
-// RTMP session utils
-
-package main
+package rtmp
 
 import (
 	"encoding/binary"
@@ -8,6 +6,8 @@ import (
 	"os"
 	"strings"
 	"time"
+
+	"github.com/Max-Gabriel-Susman/argus-stream-engine-service/internal/logging"
 )
 
 func (s *RTMPSession) SendACK(size uint32) bool {
@@ -116,19 +116,19 @@ func (s *RTMPSession) SendPingRequest() {
 	packet.header.length = uint32(len(packet.payload))
 
 	bytes := packet.CreateChunks(int(s.outChunkSize))
-	LogDebugSession(s.id, s.ip, "Sending ping request")
+	logging.LogDebugSession(s.id, s.ip, "Sending ping request")
 	s.SendSync(bytes)
 }
 
-func (s *RTMPSession) SendInvokeMessage(stream_id uint32, cmd RTMPCommand) {
+func (s *RTMPSession) SendInvokeMessage(StreamID uint32, cmd RTMPCommand) {
 	packet := createBlankRTMPPacket()
 
-	LogDebugSession(s.id, s.ip, "Sending invoke message: "+cmd.ToString())
+	logging.LogDebugSession(s.id, s.ip, "Sending invoke message: "+cmd.ToString())
 
 	packet.header.fmt = RTMP_CHUNK_TYPE_0
 	packet.header.cid = RTMP_CHANNEL_INVOKE
 	packet.header.packet_type = RTMP_TYPE_INVOKE
-	packet.header.stream_id = stream_id
+	packet.header.StreamID = StreamID
 	packet.payload = cmd.Encode()
 	packet.header.length = uint32(len(packet.payload))
 
@@ -136,13 +136,13 @@ func (s *RTMPSession) SendInvokeMessage(stream_id uint32, cmd RTMPCommand) {
 	s.SendSync(bytes)
 }
 
-func (s *RTMPSession) SendDataMessage(stream_id uint32, data RTMPData) {
+func (s *RTMPSession) SendDataMessage(StreamID uint32, data RTMPData) {
 	packet := createBlankRTMPPacket()
 
 	packet.header.fmt = RTMP_CHUNK_TYPE_0
 	packet.header.cid = RTMP_CHANNEL_DATA
 	packet.header.packet_type = RTMP_TYPE_DATA
-	packet.header.stream_id = stream_id
+	packet.header.StreamID = StreamID
 	packet.payload = data.Encode()
 	packet.header.length = uint32(len(packet.payload))
 
@@ -150,7 +150,7 @@ func (s *RTMPSession) SendDataMessage(stream_id uint32, data RTMPData) {
 	s.SendSync(bytes)
 }
 
-func (s *RTMPSession) SendStatusMessage(stream_id uint32, level string, code string, description string) {
+func (s *RTMPSession) SendStatusMessage(StreamID uint32, level string, code string, description string) {
 	cmd := RTMPCommand{
 		cmd:       "onStatus",
 		arguments: make(map[string]*AMF0Value),
@@ -181,10 +181,10 @@ func (s *RTMPSession) SendStatusMessage(stream_id uint32, level string, code str
 
 	cmd.arguments["info"] = &info
 
-	s.SendInvokeMessage(stream_id, cmd)
+	s.SendInvokeMessage(StreamID, cmd)
 }
 
-func (s *RTMPSession) SendSampleAccess(stream_id uint32) {
+func (s *RTMPSession) SendSampleAccess(StreamID uint32) {
 	cmd := RTMPData{
 		tag:       "|RtmpSampleAccess",
 		arguments: make(map[string]*AMF0Value),
@@ -198,7 +198,7 @@ func (s *RTMPSession) SendSampleAccess(stream_id uint32) {
 	bool2.bool_val = false
 	cmd.arguments["bool2"] = &bool2
 
-	s.SendDataMessage(stream_id, cmd)
+	s.SendDataMessage(StreamID, cmd)
 }
 
 func (s *RTMPSession) RespondConnect(tid int64, hasObjectEncoding bool) {
@@ -292,12 +292,12 @@ func (s *RTMPSession) SendMetadata(metaData []byte, timestamp int64) {
 	packet.header.packet_type = RTMP_TYPE_DATA
 	packet.payload = metaData
 	packet.header.length = uint32(len(packet.payload))
-	packet.header.stream_id = s.playStreamId
+	packet.header.StreamID = s.playStreamId
 	packet.header.timestamp = timestamp
 
 	chunks := packet.CreateChunks(int(s.outChunkSize))
 
-	LogDebugSession(s.id, s.ip, "Send meta data")
+	logging.LogDebugSession(s.id, s.ip, "Send meta data")
 
 	s.SendSync(chunks)
 }
@@ -307,7 +307,7 @@ func (s *RTMPSession) SendAudioCodecHeader(audioCodec uint32, aacSequenceHeader 
 		return
 	}
 
-	LogDebugSession(s.id, s.ip, "Send AUDIO codec header")
+	logging.LogDebugSession(s.id, s.ip, "Send AUDIO codec header")
 
 	packet := createBlankRTMPPacket()
 
@@ -316,7 +316,7 @@ func (s *RTMPSession) SendAudioCodecHeader(audioCodec uint32, aacSequenceHeader 
 	packet.header.packet_type = RTMP_TYPE_AUDIO
 	packet.payload = aacSequenceHeader
 	packet.header.length = uint32(len(packet.payload))
-	packet.header.stream_id = s.playStreamId
+	packet.header.StreamID = s.playStreamId
 	packet.header.timestamp = timestamp
 
 	chunks := packet.CreateChunks(int(s.outChunkSize))
@@ -329,7 +329,7 @@ func (s *RTMPSession) SendVideoCodecHeader(videoCodec uint32, avcSequenceHeader 
 		return
 	}
 
-	LogDebugSession(s.id, s.ip, "Send VIDEO codec header")
+	logging.LogDebugSession(s.id, s.ip, "Send VIDEO codec header")
 
 	packet := createBlankRTMPPacket()
 
@@ -338,7 +338,7 @@ func (s *RTMPSession) SendVideoCodecHeader(videoCodec uint32, avcSequenceHeader 
 	packet.header.packet_type = RTMP_TYPE_VIDEO
 	packet.payload = avcSequenceHeader
 	packet.header.length = uint32(len(packet.payload))
-	packet.header.stream_id = s.playStreamId
+	packet.header.StreamID = s.playStreamId
 	packet.header.timestamp = timestamp
 
 	chunks := packet.CreateChunks(int(s.outChunkSize))
@@ -365,7 +365,7 @@ func (s *RTMPSession) SendCachePacket(cache *RTMPPacket) {
 	packet.header.packet_type = cache.header.packet_type
 	packet.payload = cache.payload
 	packet.header.length = uint32(len(packet.payload))
-	packet.header.stream_id = s.playStreamId
+	packet.header.StreamID = s.playStreamId
 	packet.header.timestamp = cache.header.timestamp
 
 	chunks := packet.CreateChunks(int(s.outChunkSize))
@@ -388,7 +388,7 @@ func (s *RTMPSession) CanPlay() bool {
 		_, rang, e := net.ParseCIDR(parts[i])
 
 		if e != nil {
-			LogError(e)
+			logging.LogError(e)
 			continue
 		}
 

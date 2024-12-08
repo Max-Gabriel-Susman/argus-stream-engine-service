@@ -1,6 +1,4 @@
-// RTMP packet
-
-package main
+package rtmp
 
 import (
 	"encoding/binary"
@@ -14,7 +12,7 @@ type RTMPPacketHeader struct {
 
 	packet_type uint32
 
-	stream_id uint32
+	StreamID uint32
 
 	length uint32 // Payload length
 }
@@ -37,7 +35,7 @@ func createBlankRTMPPacket() RTMPPacket {
 			fmt:         0,
 			cid:         0,
 			packet_type: 0,
-			stream_id:   0,
+			StreamID:    0,
 			length:      0,
 		},
 		clock:    0,
@@ -91,7 +89,7 @@ func rtmpChunkMessageHeaderCreate(packet *RTMPPacket) []byte {
 
 	if packet.header.fmt == RTMP_CHUNK_TYPE_0 {
 		b := make([]byte, 4)
-		binary.LittleEndian.PutUint32(b, packet.header.stream_id)
+		binary.LittleEndian.PutUint32(b, packet.header.StreamID)
 		out = append(out, b...)
 	}
 
