@@ -2,7 +2,9 @@ temp
 .env
 *.log
 vendor/
-
+videos/*.mp4
+videos/*.ts
+videos/*.m3u8
 scripts/ 
 cloudformation/
 argus-stream-engine-service-deployment.yaml
