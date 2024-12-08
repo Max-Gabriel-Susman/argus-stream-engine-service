@@ -1,0 +1,22 @@
+# .gitignore file
+
+# Ignore binaries
+
+rtmp-server
+rtmp-server.exe
+
+# Ignore temp files
+
+temp
+
+# Ignore .env
+
+.env
+*.log
+
+README_OLD.md
+old_go.sum
+old_go.mod
+
+vendor/
+videos/
