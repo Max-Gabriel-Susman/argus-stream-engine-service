@@ -1,7 +1,11 @@
 temp
 .env
 *.log
-videos/ 
-vendor/
-scripts/
 argus-stream-engine-service-deployment.yaml
+README.md
+Makfile
+LICENSE
+.github
+videos/
+scripts/ 
+cloudformation/
