@@ -6,3 +6,4 @@ videos/
 scripts/ 
 cloudformation/
 argus-stream-engine-service-deployment.yaml
+dev-notes.txt
