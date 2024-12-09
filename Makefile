@@ -9,7 +9,7 @@ build:
 	docker build -t argus-stream-engine-service .
 
 run: 
-	docker run -p 1935:1935 brometheus/argus-stream-engine-service
+	docker run -p 1935:1935 argus-stream-engine-service
 
 tag: 
 	docker tag argus-stream-engine-service brometheus/argus-stream-engine-service:latest

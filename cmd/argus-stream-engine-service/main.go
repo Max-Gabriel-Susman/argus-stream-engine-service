@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/Max-Gabriel-Susman/argus-stream-engine-service/internal/hls"
 	"github.com/Max-Gabriel-Susman/argus-stream-engine-service/internal/logging"
 	"github.com/Max-Gabriel-Susman/argus-stream-engine-service/internal/redis"
 	"github.com/Max-Gabriel-Susman/argus-stream-engine-service/internal/rtmp"
@@ -13,16 +12,13 @@ func main() {
 
 	logging.LogInfo("Initializing Argus Stream Engine...")
 
-	rtmpServer := rtmp.CreateRTMPServer()
+	rtmpServer := rtmp.NewServer()
 
 	go redis.SetupRedisCommandReceiver(rtmpServer)
 
 	if rtmpServer != nil {
 		rtmpServer.Start()
 	}
-
-	hlsServer := hls.NewServer("./videos")
-	hlsServer.ServeContent()
 
 	logging.LogInfo("Argus Stream Engine Online.")
 }

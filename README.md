@@ -1,10 +1,29 @@
 # Argus Stream Engine Service
 
-The Argus Stream Engine Service Transforms incoming RTMP streams from ingress clients into HLS streams for egress clients. 
+The Argus Stream Engine Service manages RTMP streams between ingress and egress Argus clients. 
 
 ## Local Setup
 
-*.mp4 files may be included in the videos directory
+install VLC @ https://www.videolan.org/vlc/download-macosx.html
+
+install ffmpeg
+```
+brew install ffmpeg
+```
+
+It should be noted that an input.mp4 file needs to be included in the videos directory for the included make targets to work properly(see videos/overview.md).
+
+Start the service: 
+```
+go run cmd/argus-stream-engine-service/main.go
+```
+
+Change directory into videos and make stream
+```
+cd videos && make stream
+```
+
+Then in VLC open network for URL: rtmp://localhost/live/stream_key
 
 ## Docker 
 
@@ -12,26 +31,10 @@ You can find the docker image for this project available in Docker Hub: [https:/
 
 pull the service image:
 ```
-docker pull brometheus/argus-stream-engine-service
+make pull
 ```
 
 run the image as a container:
 ```
-docker run -p 1935:1935 brometheus/argus-stream-engine-service
-```
-
-## Kubernetes Usage
-
-deploy 
-```
-kubectl apply -f argus-stream-engine-service-deployment.yaml
-```
-
-## Connecting To the Service
-
-Argus Stream Engine Service accepts connections formatted like: rtmp://{HOST}/{CHANNEL}/{KEY}
-
-to use an input mp4 from your fileystem run: 
-```
-ffmpeg -re -i input.mp4 -c:v libx264 -preset fast -b:v 1000k -maxrate 1000k -bufsize 2000k -c:a aac -ar 44100 -b:a 128k -f flv rtmp://localhost/live/stream_key
+make run
 ```

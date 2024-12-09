@@ -40,7 +40,7 @@ type RTMPServer struct {
 	closed          bool
 }
 
-func CreateRTMPServer() *RTMPServer {
+func NewServer() *RTMPServer {
 	server := RTMPServer{
 		host:            os.Getenv("RTMP_HOST"),
 		listener:        nil,
@@ -480,7 +480,7 @@ func (server *RTMPServer) Start() {
 }
 
 func (server *RTMPServer) HandleConnection(id uint64, ip string, c net.Conn) {
-	s := CreateRTMPSession(server, id, ip, c)
+	s := NewRTMPSession(server, id, ip, c)
 
 	server.AddSession(&s)
 

@@ -77,7 +77,7 @@ type RTMPSession struct {
 	bitrate_cache BitrateCache
 }
 
-func CreateRTMPSession(server *RTMPServer, id uint64, ip string, c net.Conn) RTMPSession {
+func NewRTMPSession(server *RTMPServer, id uint64, ip string, c net.Conn) RTMPSession {
 	return RTMPSession{
 		server:        server,
 		conn:          c,
@@ -158,8 +158,6 @@ func (s *RTMPSession) HandleSession() {
 	if e != nil {
 		return
 	}
-
-	// Handshake
 
 	version, e := r.ReadByte()
 	if e != nil {
