@@ -1,6 +1,8 @@
 module github.com/Max-Gabriel-Susman/argus-stream-engine-service
 
-go 1.22
+go 1.22.0
+
+toolchain go1.22.10
 
 require (
 	github.com/AgustinSRG/go-tls-certificate-loader v1.0.0
