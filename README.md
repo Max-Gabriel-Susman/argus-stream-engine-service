@@ -1,6 +1,6 @@
 # Argus Stream Engine Service
 
-The Argus Stream Engine Service manages RTMP streams between ingress and egress clients. It’s still a WIP but I’ve had a lot of fun putting this one together the last few months. Instructions on how to set it up and operate it on your own machine are in the README’s Local Setup and Usage section.
+The Argus Stream Engine Service manages RTMP streams between ingress and egress clients. 
 
 ## Local Setup and Usage
 
