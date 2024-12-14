@@ -6,8 +6,8 @@ README.md
 Makfile
 LICENSE
 .github
-videos/*.ts
-videos/*.m3u8
+imagery/*.ts
+imagery/*.m3u8
 scripts/ 
 cloudformation/
 dev-notes.txt

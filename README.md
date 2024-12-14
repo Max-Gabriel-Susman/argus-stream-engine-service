@@ -11,7 +11,7 @@ install ffmpeg
 brew install ffmpeg
 ```
 
-It should be noted that an input.mp4 file needs to be included in the videos directory for the included make targets to work properly. This directory is used to store *.mp4 files and the files generated from them for local usage during testing and development. These files do however break git push operations so they've been gitignored by there file extensions for this reason. you'll have to supply your own mp4 files in this directory.
+It should be noted that an input.mp4 file needs to be included in the imagery directory for the included make targets to work properly. This directory is used to store *.mp4 files and the files generated from them for local usage during testing and development. These files do however break git push operations so they've been gitignored by there file extensions for this reason. you'll have to supply your own mp4 files in this directory.
 
 tidy the dependencies:
 ```
@@ -28,9 +28,9 @@ Start the service:
 go run cmd/argus-stream-engine-service/main.go
 ```
 
-At this point open a second terminal, from the root level of this repository change directory into videos and make stream
+At this point open a second terminal, from the root level of this repository change directory into imagery and make stream
 ```
-cd videos && make stream
+make stream
 ```
 
 NOTE: It's very important that you do this next step while the stream operation from the previous step is still going, other wise there will be nothing for the media player to receive. 
