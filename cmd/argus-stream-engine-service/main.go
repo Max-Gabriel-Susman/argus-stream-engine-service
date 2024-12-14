@@ -16,9 +16,9 @@ func main() {
 
 	}
 
-	rtmpServer := rtmp.NewServer()
-	if rtmpServer != nil {
-		rtmpServer.Start()
+	server := rtmp.NewServer()
+	if server != nil {
+		server.Start()
 	}
 
 	rtmp.LogInfo("Argus Stream Engine Online.")
