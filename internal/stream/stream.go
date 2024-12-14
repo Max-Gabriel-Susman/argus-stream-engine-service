@@ -2,6 +2,7 @@ package stream
 
 import "fmt"
 
+// Ingress encapsulates the fields used to interact with a streaming ingress.
 type Ingress struct {
 }
 
@@ -11,13 +12,14 @@ type Ingress struct {
 type Destination struct {
 	DestinationIngressAddress string
 	DestinationEgressAddress  string
-	DestinationResponsePath   string
 }
 
+// Egress encapsulates the fields used to interact with a streaming egress.
 type Egress struct {
 	EgressDestination Destination
 }
 
+// Relay encapsulates the fields and methods of a relay operateion.
 type Relay struct {
 	RelayIngress     Ingress
 	RelayDestination Destination
@@ -36,14 +38,17 @@ func NewRelay(destinationIngressAddress, destinationEgressAddress string) Relay 
 	}
 }
 
+// IngestStream ingests the relay response.
 func (r Relay) IngestStream() error {
 	return nil
 }
 
+// EgestStream egests the relay response.
 func (r Relay) EgestStream() error {
 	return nil
 }
 
+// HandleStreamRelay handles a relay operation.
 func (r Relay) HandleStreamRelay() error {
 	if err := r.IngestStream(); err != nil {
 		return fmt.Errorf("failure to listen to relay response: %w", err)
