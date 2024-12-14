@@ -6,8 +6,6 @@ import (
 	"os"
 	"strings"
 	"time"
-
-	"github.com/Max-Gabriel-Susman/argus-stream-engine-service/internal/logging"
 )
 
 func (s *RTMPSession) SendACK(size uint32) bool {
@@ -116,14 +114,14 @@ func (s *RTMPSession) SendPingRequest() {
 	packet.header.length = uint32(len(packet.payload))
 
 	bytes := packet.CreateChunks(int(s.outChunkSize))
-	logging.LogDebugSession(s.id, s.ip, "Sending ping request")
+	LogDebugSession(s.id, s.ip, "Sending ping request")
 	s.SendSync(bytes)
 }
 
 func (s *RTMPSession) SendInvokeMessage(StreamID uint32, cmd RTMPCommand) {
 	packet := createBlankRTMPPacket()
 
-	logging.LogDebugSession(s.id, s.ip, "Sending invoke message: "+cmd.ToString())
+	LogDebugSession(s.id, s.ip, "Sending invoke message: "+cmd.ToString())
 
 	packet.header.fmt = RTMP_CHUNK_TYPE_0
 	packet.header.cid = RTMP_CHANNEL_INVOKE
@@ -297,7 +295,7 @@ func (s *RTMPSession) SendMetadata(metaData []byte, timestamp int64) {
 
 	chunks := packet.CreateChunks(int(s.outChunkSize))
 
-	logging.LogDebugSession(s.id, s.ip, "Send meta data")
+	LogDebugSession(s.id, s.ip, "Send meta data")
 
 	s.SendSync(chunks)
 }
@@ -307,7 +305,7 @@ func (s *RTMPSession) SendAudioCodecHeader(audioCodec uint32, aacSequenceHeader 
 		return
 	}
 
-	logging.LogDebugSession(s.id, s.ip, "Send AUDIO codec header")
+	LogDebugSession(s.id, s.ip, "Send AUDIO codec header")
 
 	packet := createBlankRTMPPacket()
 
@@ -329,7 +327,7 @@ func (s *RTMPSession) SendVideoCodecHeader(videoCodec uint32, avcSequenceHeader 
 		return
 	}
 
-	logging.LogDebugSession(s.id, s.ip, "Send VIDEO codec header")
+	LogDebugSession(s.id, s.ip, "Send VIDEO codec header")
 
 	packet := createBlankRTMPPacket()
 
@@ -388,7 +386,7 @@ func (s *RTMPSession) CanPlay() bool {
 		_, rang, e := net.ParseCIDR(parts[i])
 
 		if e != nil {
-			logging.LogError(e)
+			LogError(e)
 			continue
 		}
 

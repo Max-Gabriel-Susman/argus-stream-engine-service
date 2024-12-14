@@ -11,8 +11,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-
-	"github.com/Max-Gabriel-Susman/argus-stream-engine-service/internal/logging"
 )
 
 type BitrateCache struct {
@@ -165,38 +163,38 @@ func (s *RTMPSession) HandleSession() {
 	}
 
 	if version != RTMP_VERSION {
-		logging.LogDebugSession(s.id, s.ip, "Invalid protocol version received")
+		LogDebugSession(s.id, s.ip, "Invalid protocol version received")
 		return
 	}
 
 	handshakeBytes := make([]byte, RTMP_HANDSHAKE_SIZE)
 	e = s.conn.SetReadDeadline(time.Now().Add(RTMP_PING_TIMEOUT * time.Millisecond))
 	if e != nil {
-		logging.LogDebugSession(s.id, s.ip, "Could not set deadline: "+e.Error())
+		LogDebugSession(s.id, s.ip, "Could not set deadline: "+e.Error())
 		return
 	}
 	n, e := io.ReadFull(r, handshakeBytes)
 	if e != nil || n != RTMP_HANDSHAKE_SIZE {
-		logging.LogDebugSession(s.id, s.ip, "Invalid handshake received")
+		LogDebugSession(s.id, s.ip, "Invalid handshake received")
 		return
 	}
 
 	s0s1s2 := generateS0S1S2(handshakeBytes)
 	n, e = s.conn.Write(s0s1s2)
 	if e != nil || n != len(s0s1s2) {
-		logging.LogDebugSession(s.id, s.ip, "Could not send handshake message")
+		LogDebugSession(s.id, s.ip, "Could not send handshake message")
 		return
 	}
 
 	s1Copy := make([]byte, RTMP_HANDSHAKE_SIZE)
 	e = s.conn.SetReadDeadline(time.Now().Add(RTMP_PING_TIMEOUT * time.Millisecond))
 	if e != nil {
-		logging.LogDebugSession(s.id, s.ip, "Could not set deadline: "+e.Error())
+		LogDebugSession(s.id, s.ip, "Could not set deadline: "+e.Error())
 		return
 	}
 	n, e = io.ReadFull(r, s1Copy)
 	if e != nil || n != RTMP_HANDSHAKE_SIZE {
-		logging.LogDebugSession(s.id, s.ip, "Invalid handshake response received")
+		LogDebugSession(s.id, s.ip, "Invalid handshake response received")
 		return
 	}
 
@@ -215,13 +213,13 @@ func (s *RTMPSession) ReadChunk(r *bufio.Reader) bool {
 	// Start byte
 	e := s.conn.SetReadDeadline(time.Now().Add(RTMP_PING_TIMEOUT * time.Millisecond))
 	if e != nil {
-		logging.LogDebugSession(s.id, s.ip, "Could not set deadline: "+e.Error())
+		LogDebugSession(s.id, s.ip, "Could not set deadline: "+e.Error())
 		return false
 	}
 	startByte, e := r.ReadByte()
 	bytesReadCount++
 	if e != nil {
-		logging.LogDebugSession(s.id, s.ip, "Could not read chunk start byte. "+e.Error())
+		LogDebugSession(s.id, s.ip, "Could not read chunk start byte. "+e.Error())
 		return false
 	}
 
@@ -240,13 +238,13 @@ func (s *RTMPSession) ReadChunk(r *bufio.Reader) bool {
 	for i := 1; i < parserBasicBytes; i++ {
 		e := s.conn.SetReadDeadline(time.Now().Add(RTMP_PING_TIMEOUT * time.Millisecond))
 		if e != nil {
-			logging.LogDebugSession(s.id, s.ip, "Could not set deadline: "+e.Error())
+			LogDebugSession(s.id, s.ip, "Could not set deadline: "+e.Error())
 			return false
 		}
 		b, e := r.ReadByte()
 		bytesReadCount++
 		if e != nil {
-			logging.LogDebugSession(s.id, s.ip, "Could not read chunk basic bytes")
+			LogDebugSession(s.id, s.ip, "Could not read chunk basic bytes")
 			return false
 		}
 
@@ -259,13 +257,13 @@ func (s *RTMPSession) ReadChunk(r *bufio.Reader) bool {
 		headerLeft := make([]byte, size)
 		e := s.conn.SetReadDeadline(time.Now().Add(RTMP_PING_TIMEOUT * time.Millisecond))
 		if e != nil {
-			logging.LogDebugSession(s.id, s.ip, "Could set deadline: "+e.Error())
+			LogDebugSession(s.id, s.ip, "Could set deadline: "+e.Error())
 			return false
 		}
 		n, e := io.ReadFull(r, headerLeft)
 		bytesReadCount += uint32(size)
 		if e != nil || n != size {
-			logging.LogDebugSession(s.id, s.ip, "Could not read chunk header")
+			LogDebugSession(s.id, s.ip, "Could not read chunk header")
 			return false
 		}
 		header = append(header, headerLeft...)
@@ -328,7 +326,7 @@ func (s *RTMPSession) ReadChunk(r *bufio.Reader) bool {
 	}
 
 	if packet.header.packet_type > RTMP_TYPE_METADATA {
-		logging.LogDebugSession(s.id, s.ip, "Received stop packet: "+strconv.Itoa(int(packet.header.packet_type)))
+		LogDebugSession(s.id, s.ip, "Received stop packet: "+strconv.Itoa(int(packet.header.packet_type)))
 		return false
 	}
 
@@ -338,13 +336,13 @@ func (s *RTMPSession) ReadChunk(r *bufio.Reader) bool {
 		tsBytes := make([]byte, 4)
 		e := s.conn.SetReadDeadline(time.Now().Add(RTMP_PING_TIMEOUT * time.Millisecond))
 		if e != nil {
-			logging.LogDebugSession(s.id, s.ip, "Could not set deadline: "+e.Error())
+			LogDebugSession(s.id, s.ip, "Could not set deadline: "+e.Error())
 			return false
 		}
 		n, e := io.ReadFull(r, tsBytes)
 		bytesReadCount += 4
 		if e != nil || n != 4 {
-			logging.LogDebugSession(s.id, s.ip, "Could not read extended timestamp")
+			LogDebugSession(s.id, s.ip, "Could not read extended timestamp")
 			return false
 		}
 		extended_timestamp = int64(binary.BigEndian.Uint32(tsBytes))
@@ -377,16 +375,16 @@ func (s *RTMPSession) ReadChunk(r *bufio.Reader) bool {
 		bytesToRead := make([]byte, sizeToRead)
 		e := s.conn.SetReadDeadline(time.Now().Add(RTMP_PING_TIMEOUT * time.Millisecond))
 		if e != nil {
-			logging.LogDebugSession(s.id, s.ip, "Could not set deadline: "+e.Error())
+			LogDebugSession(s.id, s.ip, "Could not set deadline: "+e.Error())
 			return false
 		}
 		n, e := io.ReadFull(r, bytesToRead)
 		bytesReadCount += sizeToRead
 		if e != nil || uint32(n) != sizeToRead {
 			if e != nil {
-				logging.LogDebugSession(s.id, s.ip, "Error: "+e.Error())
+				LogDebugSession(s.id, s.ip, "Error: "+e.Error())
 			}
-			logging.LogDebugSession(s.id, s.ip, "Could not read chunk payload")
+			LogDebugSession(s.id, s.ip, "Could not read chunk payload")
 			return false
 		}
 
@@ -399,7 +397,7 @@ func (s *RTMPSession) ReadChunk(r *bufio.Reader) bool {
 		packet.handled = true // Remove from pending packets
 		if packet.clock <= 0xffffffff {
 			if !s.HandlePacket(packet) {
-				logging.LogDebugSession(s.id, s.ip, "Could not handle packet")
+				LogDebugSession(s.id, s.ip, "Could not handle packet")
 				return false
 			}
 		}
@@ -414,10 +412,10 @@ func (s *RTMPSession) ReadChunk(r *bufio.Reader) bool {
 	if s.ackSize > 0 && s.inAckSize-s.inLastAck >= s.ackSize {
 		s.inLastAck = s.inAckSize
 		if !s.SendACK(s.inAckSize) {
-			logging.LogDebugSession(s.id, s.ip, "Could not send ACK")
+			LogDebugSession(s.id, s.ip, "Could not send ACK")
 			return false
 		} else {
-			logging.LogDebugSession(s.id, s.ip, "Sent ACK: "+strconv.Itoa(int(s.inAckSize)))
+			LogDebugSession(s.id, s.ip, "Sent ACK: "+strconv.Itoa(int(s.inAckSize)))
 		}
 	}
 
@@ -429,7 +427,7 @@ func (s *RTMPSession) ReadChunk(r *bufio.Reader) bool {
 		s.bitrate = uint64(math.Round(float64(s.bitrate_cache.bytes) * 8 / float64(diff)))
 		s.bitrate_cache.bytes = 0
 		s.bitrate_cache.last_update = now
-		logging.LogDebugSession(s.id, s.ip, "Bitrate is now: "+strconv.Itoa(int(s.bitrate)))
+		LogDebugSession(s.id, s.ip, "Bitrate is now: "+strconv.Itoa(int(s.bitrate)))
 	}
 
 	return true
@@ -438,32 +436,32 @@ func (s *RTMPSession) ReadChunk(r *bufio.Reader) bool {
 func (s *RTMPSession) HandlePacket(packet *RTMPPacket) bool {
 	switch packet.header.packet_type {
 	case RTMP_TYPE_SET_CHUNK_SIZE:
-		logging.LogDebugSession(s.id, s.ip, "Received packet: RTMP_TYPE_SET_CHUNK_SIZE")
+		LogDebugSession(s.id, s.ip, "Received packet: RTMP_TYPE_SET_CHUNK_SIZE")
 		csb := packet.payload[0:4]
 		s.inChunkSize = binary.BigEndian.Uint32(csb)
 	case RTMP_TYPE_WINDOW_ACKNOWLEDGEMENT_SIZE:
-		logging.LogDebugSession(s.id, s.ip, "Received packet: RTMP_TYPE_WINDOW_ACKNOWLEDGEMENT_SIZE")
+		LogDebugSession(s.id, s.ip, "Received packet: RTMP_TYPE_WINDOW_ACKNOWLEDGEMENT_SIZE")
 		csb := packet.payload[0:4]
 		s.ackSize = binary.BigEndian.Uint32(csb)
-		logging.LogDebugSession(s.id, s.ip, "ACK size updated: "+strconv.Itoa(int(s.ackSize)))
+		LogDebugSession(s.id, s.ip, "ACK size updated: "+strconv.Itoa(int(s.ackSize)))
 	case RTMP_TYPE_AUDIO:
 		return s.HandleAudioPacket(packet)
 	case RTMP_TYPE_VIDEO:
 		return s.HandleVideoPacket(packet)
 	case RTMP_TYPE_FLEX_MESSAGE:
-		logging.LogDebugSession(s.id, s.ip, "Received packet: RTMP_TYPE_FLEX_MESSAGE")
+		LogDebugSession(s.id, s.ip, "Received packet: RTMP_TYPE_FLEX_MESSAGE")
 		return s.HandleInvoke(packet)
 	case RTMP_TYPE_INVOKE:
-		logging.LogDebugSession(s.id, s.ip, "Received packet: RTMP_TYPE_INVOKE")
+		LogDebugSession(s.id, s.ip, "Received packet: RTMP_TYPE_INVOKE")
 		return s.HandleInvoke(packet)
 	case RTMP_TYPE_DATA:
-		logging.LogDebugSession(s.id, s.ip, "Received packet: RTMP_TYPE_DATA")
+		LogDebugSession(s.id, s.ip, "Received packet: RTMP_TYPE_DATA")
 		return s.HandleDataPacketAMF0(packet)
 	case RTMP_TYPE_FLEX_STREAM:
-		logging.LogDebugSession(s.id, s.ip, "Received packet: RTMP_TYPE_FLEX_STREAM")
+		LogDebugSession(s.id, s.ip, "Received packet: RTMP_TYPE_FLEX_STREAM")
 		return s.HandleDataPacketAMF3(packet)
 	default:
-		logging.LogDebugSession(s.id, s.ip, "Received packet: "+strconv.Itoa(int(packet.header.packet_type)))
+		LogDebugSession(s.id, s.ip, "Received packet: "+strconv.Itoa(int(packet.header.packet_type)))
 	}
 
 	return true
@@ -481,7 +479,7 @@ func (s *RTMPSession) HandleInvoke(packet *RTMPPacket) bool {
 
 	cmd := decodeRTMPCommand(payload)
 
-	logging.LogDebugSession(s.id, s.ip, "Received invoke: "+cmd.ToString())
+	LogDebugSession(s.id, s.ip, "Received invoke: "+cmd.ToString())
 
 	switch cmd.cmd {
 	case "connect":
@@ -512,7 +510,7 @@ func (s *RTMPSession) HandleConnect(cmd *RTMPCommand) bool {
 
 	// Validate channel
 	if !validateStreamIDString(s.channel) {
-		logging.LogRequest(s.id, s.ip, "INVALID CHANNEL '"+s.channel+"'")
+		LogRequest(s.id, s.ip, "INVALID CHANNEL '"+s.channel+"'")
 		return false
 	}
 
@@ -525,7 +523,7 @@ func (s *RTMPSession) HandleConnect(cmd *RTMPCommand) bool {
 
 	transId := cmd.GetArg("transId").GetInteger()
 
-	logging.LogRequest(s.id, s.ip, "CONNECT '"+s.channel+"'")
+	LogRequest(s.id, s.ip, "CONNECT '"+s.channel+"'")
 
 	s.SendWindowACK(5000000)
 	s.SetPeerBandwidth(5000000, 2)
@@ -569,11 +567,11 @@ func (s *RTMPSession) HandlePublish(cmd *RTMPCommand, packet *RTMPPacket) bool {
 		return false
 	}
 
-	logging.LogRequest(s.id, s.ip, "PUBLISH ("+strconv.Itoa(int(s.publishStreamId))+") '"+s.channel+"'")
+	LogRequest(s.id, s.ip, "PUBLISH ("+strconv.Itoa(int(s.publishStreamId))+") '"+s.channel+"'")
 
 	// Callback
 	if !s.SendStartCallback() {
-		logging.LogRequest(s.id, s.ip, "Error: Invalid streaming key provided")
+		LogRequest(s.id, s.ip, "Error: Invalid streaming key provided")
 		s.SendStatusMessage(s.publishStreamId, "error", "NetStream.Publish.BadName", "Invalid stream key provided")
 		return false
 	}
@@ -617,7 +615,7 @@ func (s *RTMPSession) HandlePlay(cmd *RTMPCommand, packet *RTMPPacket) bool {
 		return false
 	}
 
-	logging.LogRequest(s.id, s.ip, "PLAY ("+strconv.Itoa(int(s.playStreamId))+") '"+s.channel+"'")
+	LogRequest(s.id, s.ip, "PLAY ("+strconv.Itoa(int(s.playStreamId))+") '"+s.channel+"'")
 
 	s.RespondPlay()
 
@@ -625,7 +623,7 @@ func (s *RTMPSession) HandlePlay(cmd *RTMPCommand, packet *RTMPPacket) bool {
 	idle, e := s.server.AddPlayer(s.channel, s.key, s)
 
 	if e != nil {
-		logging.LogRequest(s.id, s.ip, "Error: Invalid streaming key provided")
+		LogRequest(s.id, s.ip, "Error: Invalid streaming key provided")
 		s.SendStatusMessage(s.playStreamId, "error", "NetStream.Play.BadName", "Invalid stream key provided")
 		return false // Invalid key
 	}
@@ -636,7 +634,7 @@ func (s *RTMPSession) HandlePlay(cmd *RTMPCommand, packet *RTMPPacket) bool {
 			publisher.StartPlayer(s)
 		}
 	} else {
-		logging.LogRequest(s.id, s.ip, "PLAY IDLE '"+s.channel+"'")
+		LogRequest(s.id, s.ip, "PLAY IDLE '"+s.channel+"'")
 	}
 
 	return true
@@ -652,16 +650,16 @@ func (s *RTMPSession) HandlePause(cmd *RTMPCommand) bool {
 	if s.isPause {
 		s.SendStreamStatus(STREAM_EOF, s.playStreamId)
 		s.SendStatusMessage(s.playStreamId, "status", "NetStream.Pause.Notify", "Paused live")
-		logging.LogRequest(s.id, s.ip, "PAUSE '"+s.channel+"'")
+		LogRequest(s.id, s.ip, "PAUSE '"+s.channel+"'")
 	} else {
 		s.SendStreamStatus(STREAM_BEGIN, s.playStreamId)
 		publisher := s.server.GetPublisher(s.channel)
 
 		if publisher != nil {
-			logging.LogRequest(s.id, s.ip, "RESUME '"+s.channel+"'")
+			LogRequest(s.id, s.ip, "RESUME '"+s.channel+"'")
 			publisher.ResumePlayer(s)
 		} else {
-			logging.LogRequest(s.id, s.ip, "PLAY IDLE '"+s.channel+"'")
+			LogRequest(s.id, s.ip, "PLAY IDLE '"+s.channel+"'")
 		}
 
 		s.SendStatusMessage(s.playStreamId, "status", "NetStream.Unpause.Notify", "Unpaused live")
@@ -675,7 +673,7 @@ func (s *RTMPSession) HandleDeleteStream(cmd *RTMPCommand) bool {
 
 	if streamId == s.playStreamId {
 		// Close play
-		logging.LogRequest(s.id, s.ip, "PLAY STOP '"+s.channel+"'")
+		LogRequest(s.id, s.ip, "PLAY STOP '"+s.channel+"'")
 
 		s.server.RemovePlayer(s.channel, s.key, s)
 
@@ -688,7 +686,7 @@ func (s *RTMPSession) HandleDeleteStream(cmd *RTMPCommand) bool {
 
 	if streamId == s.publishStreamId {
 		// Close publish
-		logging.LogDebugSession(s.id, s.ip, "Close publish stream")
+		LogDebugSession(s.id, s.ip, "Close publish stream")
 
 		if s.isPublishing {
 			s.EndPublish(false)
@@ -704,7 +702,7 @@ func (s *RTMPSession) DeleteStream(streamId uint32) {
 
 	if streamId == s.playStreamId {
 		// Close play
-		logging.LogDebugSession(s.id, s.ip, "Close play stream: "+strconv.Itoa(int(streamId)))
+		LogDebugSession(s.id, s.ip, "Close play stream: "+strconv.Itoa(int(streamId)))
 
 		s.server.RemovePlayer(s.channel, s.key, s)
 
@@ -715,7 +713,7 @@ func (s *RTMPSession) DeleteStream(streamId uint32) {
 
 	if streamId == s.publishStreamId {
 		// Close publish
-		logging.LogDebugSession(s.id, s.ip, "Close publish stream: "+strconv.Itoa(int(streamId)))
+		LogDebugSession(s.id, s.ip, "Close publish stream: "+strconv.Itoa(int(streamId)))
 
 		if s.isPublishing {
 			s.EndPublish(true)
@@ -868,7 +866,7 @@ func (s *RTMPSession) HandleDataPacketAMF3(packet *RTMPPacket) bool {
 }
 
 func (s *RTMPSession) HandleRTMPData(packet *RTMPPacket, data *RTMPData) bool {
-	logging.LogDebugSession(s.id, s.ip, "Received data: "+data.ToString())
+	LogDebugSession(s.id, s.ip, "Received data: "+data.ToString())
 	switch data.tag {
 	case "@setDataFrame":
 		metaData := s.BuildMetadata(data)

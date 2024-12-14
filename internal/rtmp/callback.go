@@ -7,7 +7,6 @@ import (
 
 	"net/http"
 
-	"github.com/Max-Gabriel-Susman/argus-stream-engine-service/internal/logging"
 	"github.com/golang-jwt/jwt"
 )
 
@@ -21,7 +20,7 @@ func (s *RTMPSession) SendStartCallback() bool {
 		return true // No callback
 	}
 
-	logging.LogDebugSession(s.id, s.ip, "POST "+CALLBACK_URL+" | Event: START | Channel: "+s.channel)
+	LogDebugSession(s.id, s.ip, "POST "+CALLBACK_URL+" | Event: START | Channel: "+s.channel)
 
 	var subject = os.Getenv("CUSTOM_JWT_SUBJECT")
 
@@ -44,7 +43,7 @@ func (s *RTMPSession) SendStartCallback() bool {
 	tokenb64, e := token.SignedString([]byte(JWT_SECRET))
 
 	if e != nil {
-		logging.LogError(e)
+		LogError(e)
 		return false
 	}
 
@@ -53,7 +52,7 @@ func (s *RTMPSession) SendStartCallback() bool {
 	req, e := http.NewRequest("POST", CALLBACK_URL, nil)
 
 	if e != nil {
-		logging.LogError(e)
+		LogError(e)
 		return false
 	}
 
@@ -62,17 +61,17 @@ func (s *RTMPSession) SendStartCallback() bool {
 	res, e := client.Do(req)
 
 	if e != nil {
-		logging.LogError(e)
+		LogError(e)
 		return false
 	}
 
 	if res.StatusCode != 200 {
-		logging.LogDebugSession(s.id, s.ip, "Callback request ended with status code: "+fmt.Sprint(res.StatusCode))
+		LogDebugSession(s.id, s.ip, "Callback request ended with status code: "+fmt.Sprint(res.StatusCode))
 		return false
 	}
 
 	s.StreamID = res.Header.Get("stream-id")
-	logging.LogDebugSession(s.id, s.ip, "Stream ID: "+s.StreamID)
+	LogDebugSession(s.id, s.ip, "Stream ID: "+s.StreamID)
 
 	return true
 }
@@ -85,7 +84,7 @@ func (s *RTMPSession) SendStopCallback() bool {
 		return true // No callback
 	}
 
-	logging.LogDebugSession(s.id, s.ip, "POST "+CALLBACK_URL+" | Event: STOP | Channel: "+s.channel)
+	LogDebugSession(s.id, s.ip, "POST "+CALLBACK_URL+" | Event: STOP | Channel: "+s.channel)
 
 	var subject = os.Getenv("CUSTOM_JWT_SUBJECT")
 
@@ -107,7 +106,7 @@ func (s *RTMPSession) SendStopCallback() bool {
 	tokenb64, e := token.SignedString([]byte(JWT_SECRET))
 
 	if e != nil {
-		logging.LogError(e)
+		LogError(e)
 		return false
 	}
 
@@ -116,7 +115,7 @@ func (s *RTMPSession) SendStopCallback() bool {
 	req, e := http.NewRequest("POST", CALLBACK_URL, nil)
 
 	if e != nil {
-		logging.LogError(e)
+		LogError(e)
 		return false
 	}
 
@@ -125,12 +124,12 @@ func (s *RTMPSession) SendStopCallback() bool {
 	res, e := client.Do(req)
 
 	if e != nil {
-		logging.LogError(e)
+		LogError(e)
 		return false
 	}
 
 	if res.StatusCode != 200 {
-		logging.LogDebugSession(s.id, s.ip, "Callback request ended with status code: "+fmt.Sprint(res.StatusCode))
+		LogDebugSession(s.id, s.ip, "Callback request ended with status code: "+fmt.Sprint(res.StatusCode))
 		return false
 	}
 
