@@ -5,9 +5,13 @@ import "fmt"
 type Ingress struct {
 }
 
+// Separate ingress and egress address enables pipelining image processing services.
+//
+// Destination encapsulates the fields used to interact with a streaming destination.
 type Destination struct {
-	DestinationAddress      string
-	DestinationResponsePath string
+	DestinationIngressAddress string
+	DestinationEgressAddress  string
+	DestinationResponsePath   string
 }
 
 type Egress struct {
@@ -20,10 +24,14 @@ type Relay struct {
 	RelayEgress      Egress
 }
 
-func NewRelay(destinationAddress string) Relay {
+// TODO: we're gonna need to parameterize these address args with environment variables.
+//
+// NewRelay Constructs a new Relay.
+func NewRelay(destinationIngressAddress, destinationEgressAddress string) Relay {
 	return Relay{
 		RelayDestination: Destination{
-			DestinationAddress: destinationAddress,
+			DestinationIngressAddress: destinationIngressAddress,
+			DestinationEgressAddress:  destinationEgressAddress,
 		},
 	}
 }
