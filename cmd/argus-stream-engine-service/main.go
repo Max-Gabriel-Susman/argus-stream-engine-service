@@ -13,7 +13,7 @@ func main() {
 		rtmp.LogInfo("Relay Ingress Address: " + config.RelayIngressAddress)
 		rtmp.LogInfo("Relay Egress Address: " + config.RelayEgressAddress)
 		rtmp.LogInfo("Egress Destination Address: " + config.EgressDestinationAddress)
-
+		// TODO: implement with relay logic
 	}
 
 	server := rtmp.NewServer()

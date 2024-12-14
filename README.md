@@ -11,8 +11,6 @@ install ffmpeg
 brew install ffmpeg
 ```
 
-It should be noted that an input.mp4 file needs to be included in the imagery directory for the included make targets to work properly. This directory is used to store *.mp4 files and the files generated from them for local usage during testing and development. These files do however break git push operations so they've been gitignored by there file extensions for this reason. you'll have to supply your own mp4 files in this directory.
-
 tidy the dependencies:
 ```
 go mod tidy
@@ -22,6 +20,8 @@ vendor the dependencies:
 ```
 go mod vendor
 ```
+
+It should be noted that an input.mp4 file needs to be included in the imagery directory for the included make targets to work properly. 
 
 Start the service: 
 ```
