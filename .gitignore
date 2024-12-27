@@ -10,3 +10,6 @@ scripts/
 cloudformation/
 argus-stream-engine-service-deployment.yaml
 dev-notes.txt
+vendor/
+pipeline.o
+libpipeline.a
