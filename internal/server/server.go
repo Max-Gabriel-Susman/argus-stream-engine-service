@@ -22,5 +22,7 @@ func NewServer(pipeline stream.Pipeline, detector detection.Detector) (Server, e
 }
 
 func (s Server) Run() {
-	log.Println("Initializing Argus Stream Engine Service")
+	log.Println("Initializing Argus Stream Engine Service...")
+
+	log.Println("Argus Stream Engine Service online.")
 }

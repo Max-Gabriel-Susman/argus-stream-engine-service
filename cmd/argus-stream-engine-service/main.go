@@ -1,11 +1,5 @@
 package main
 
-/*
-#cgo CFLAGS: -I.
-#cgo LDFLAGS: -L. -lpipeline
-#include "../../pipeline.h"
-*/
-import "C"
 import (
 	"fmt"
 
@@ -19,7 +13,6 @@ func main() {
 }
 
 func run() error {
-	C.InitializeMediaPipeline()
 
 	server, err := server.NewServer(stream.NewPipeline(), detection.NewDetector())
 	if err != nil {
