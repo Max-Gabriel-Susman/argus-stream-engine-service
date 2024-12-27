@@ -1,7 +1,7 @@
 // pipeline.h
-#ifndef HELLO_H
-#define HELLO_H
+#ifndef PIPELINE_H
+#define PIPELINE_H
 
 void InitializeMediaPipeline();
 
-#endif // HELLO_H
+#endif // PIPELINE_H
