@@ -6,12 +6,27 @@ package main
 #include "../../pipeline.h"
 */
 import "C"
-import "github.com/Max-Gabriel-Susman/argus-stream-engine-service/internal/detection"
+import (
+	"fmt"
+
+	"github.com/Max-Gabriel-Susman/argus-stream-engine-service/internal/detection"
+	"github.com/Max-Gabriel-Susman/argus-stream-engine-service/internal/server"
+	"github.com/Max-Gabriel-Susman/argus-stream-engine-service/internal/stream"
+)
 
 func main() {
-	pipeline := pipeline.NewPipeline()
+	run()
+}
 
-	detector := detection.NewDetector()
-
+func run() error {
 	C.InitializeMediaPipeline()
+
+	server, err := server.NewServer(stream.NewPipeline(), detection.NewDetector())
+	if err != nil {
+		return fmt.Errorf("failure to create server: %w", err)
+	}
+
+	server.Run()
+
+	return nil
 }
