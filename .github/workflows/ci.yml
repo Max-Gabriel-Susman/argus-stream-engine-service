@@ -27,10 +27,6 @@ jobs:
     - name: Build Pipeline Library
       run: |
         make build
-
-    - name: Run the application
-      run: |
-        make run
         
     - name: Test the application
       run: |
