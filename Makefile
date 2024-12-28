@@ -1,14 +1,20 @@
 
+deps: 
+	go get "github.com/Max-Gabriel-Susman/rtmp"
+	git submodule update --init --recursive
+
 
 build:
-	git submodule update --init --recursive
 	gcc -c -o internal/detection/detector.o internal/detection/libdetector/detector.c
 	ar rcs internal/detection/libdetector.a internal/detection/detector.o
 	gcc -c -o internal/stream/pipeline.o internal/stream/libpipeline/pipeline.c
 	ar rcs internal/stream/libpipeline.a internal/stream/pipeline.o
 
 clean: 
-	rm internal/stream/pipeline.o internal/stream/libpipeline.a
+	rm internal/stream/pipeline.o \
+	internal/stream/libpipeline.a \
+	internal/detection/detector.o \
+	internal/detection/libdetector.a
 
 run: 
 	go run cmd/argus-stream-engine-service/main.go

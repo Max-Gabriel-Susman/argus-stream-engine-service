@@ -4,6 +4,11 @@ The Argus Stream Engine Service manages RTMP streams between ingress and egress 
 
 ## Usage 
 
+install dependencies:
+```
+make deps
+```
+
 build pipeline library binaries:
 ```
 make build
