@@ -3,21 +3,24 @@ package server
 import (
 	"log"
 
+	"github.com/Max-Gabriel-Susman/rtmp"
+
 	"github.com/Max-Gabriel-Susman/argus-stream-engine-service/internal/detection"
 	"github.com/Max-Gabriel-Susman/argus-stream-engine-service/internal/router"
 	"github.com/Max-Gabriel-Susman/argus-stream-engine-service/internal/stream"
 )
 
 type Server struct {
-	router.Router
+	Router router.Router
+	RTMP   rtmp.Server
 }
 
-func NewServer(pipeline stream.Pipeline, detector detection.Detector) (Server, error) {
-
+func NewStreamServer(pipeline stream.Pipeline, detector detection.Detector) (Server, error) {
 	router := router.NewRouter(pipeline, detector)
 
 	return Server{
 		Router: router,
+		RTMP:   *rtmp.NewServer(),
 	}, nil
 }
 

@@ -13,15 +13,14 @@ func main() {
 }
 
 func run() error {
-	// TODO: include rtmp.Server here
-
-	// TODO: we may want to integrate rtmp.Server into server.Server
-	server, err := server.NewServer(stream.NewPipeline(), detection.NewDetector())
+	server, err := server.NewStreamServer(stream.NewPipeline(), detection.NewDetector())
 	if err != nil {
 		return fmt.Errorf("failure to create server: %w", err)
 	}
 
-	server.Run()
+	if &server.RTMP != nil {
+		server.RTMP.Start()
+	}
 
 	return nil
 }

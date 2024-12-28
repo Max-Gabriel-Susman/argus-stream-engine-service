@@ -1,6 +1,8 @@
 
 deps: 
-	go get "github.com/Max-Gabriel-Susman/rtmp"
+	go get "github.com/Max-Gabriel-Susman/rtmp@v0.0.1"
+	go mod tidy
+	go mod vendor
 	git submodule update --init --recursive
 
 
