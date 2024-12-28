@@ -1,6 +1,4 @@
-github.com/AgustinSRG/go-tls-certificate-loader v1.0.0 h1:nX2D/vdd+BzC6fjUKCIPVrsx04cBmeLs+W4+QOQF5A0=
-github.com/AgustinSRG/go-tls-certificate-loader v1.0.0/go.mod h1:7w2gdPbY/+wVg8AbureQVBcvOJSZVcYYtYJXoBVWDcU=
-github.com/Max-Gabriel-Susman/rtmp v0.0.1 h1:54qlprK/PU78KQhrLwvblcaVaJ+5tIeDMGBILIJmOAU=
-github.com/Max-Gabriel-Susman/rtmp v0.0.1/go.mod h1:DdDOE348OaJyj4w0pqT9lC5fxmowr2IWsxpXd9LIamk=
+github.com/Max-Gabriel-Susman/rtmp v0.1.0 h1:rV2T1+/R5LhYUZf/0yvdrZuFUON7G/RMbE9OKshHeUA=
+github.com/Max-Gabriel-Susman/rtmp v0.1.0/go.mod h1:mzNphNiouZwma64pFkm52+R5Lu3QH0xlhmfNPgoRJyo=
 github.com/golang-jwt/jwt v3.2.2+incompatible h1:IfV12K8xAKAnZqdXVzCZ+TOjboZ2keLg81eXfW3O+oY=
 github.com/golang-jwt/jwt v3.2.2+incompatible/go.mod h1:8pz2t5EyA70fFQQSrl6XZXzqecmYZeUEB8OUGHkxJ+I=

@@ -1,6 +1,6 @@
 
 deps: 
-	go get "github.com/Max-Gabriel-Susman/rtmp@v0.0.1"
+	go get "github.com/Max-Gabriel-Susman/rtmp@v0.1.0"
 	go mod tidy
 	go mod vendor
 	git submodule update --init --recursive
@@ -17,9 +17,17 @@ clean:
 	internal/stream/libpipeline.a \
 	internal/detection/detector.o \
 	internal/detection/libdetector.a
+	rm -r vendor
+	rm go.sum
 
 run: 
 	go run cmd/argus-stream-engine-service/main.go
+
+yolo:
+	make clean 
+	make deps
+	make build 
+	make run
 
 test: 
 	go test ./...
