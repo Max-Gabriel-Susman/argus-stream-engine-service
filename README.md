@@ -18,3 +18,11 @@ clear binaries:
 ```
 make clean
 ```
+
+## TODOs
+
+1. Upgrade build system to a CMake Implementation
+
+2. Dockerize the service
+
+3. Provide instructions for deployment on and consumption from EKS
