@@ -3,7 +3,7 @@ package stream
 /*
 #cgo CFLAGS: -I.
 #cgo LDFLAGS: -L. -lpipeline
-#include "../../pipeline.h"
+#include "libpipeline/pipeline.h"
 */
 import "C"
 
