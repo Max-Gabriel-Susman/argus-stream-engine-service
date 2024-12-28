@@ -1,6 +1,7 @@
 
 
 build:
+	git submodule update --init --recursive
 	gcc -c -o internal/stream/pipeline.o internal/stream/libpipeline/pipeline.c
 	ar rcs internal/stream/libpipeline.a internal/stream/pipeline.o
 
