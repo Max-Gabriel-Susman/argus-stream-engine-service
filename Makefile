@@ -1,7 +1,7 @@
 
 
 build:
-	gcc -c -o internal/stream/pipeline.o pipeline.c
+	gcc -c -o internal/stream/pipeline.o internal/stream/libpipeline/pipeline.c
 	ar rcs internal/stream/libpipeline.a internal/stream/pipeline.o
 
 clean: 
