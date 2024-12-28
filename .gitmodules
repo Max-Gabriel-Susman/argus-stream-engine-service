@@ -1,3 +1,6 @@
 [submodule "internal/stream/libpipeline"]
 	path = internal/stream/libpipeline
 	url = https://github.com/Max-Gabriel-Susman/argus-media-pipeline.git
+[submodule "internal/detection/libdetector"]
+	path = internal/detection/libdetector
+	url = https://github.com/Max-Gabriel-Susman/argus-object-detection.git
