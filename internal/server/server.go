@@ -5,7 +5,6 @@ import (
 
 	"github.com/Max-Gabriel-Susman/rtmp"
 
-	"github.com/Max-Gabriel-Susman/argus-stream-engine-service/internal/detection"
 	"github.com/Max-Gabriel-Susman/argus-stream-engine-service/internal/router"
 	"github.com/Max-Gabriel-Susman/argus-stream-engine-service/internal/stream"
 )
@@ -15,8 +14,8 @@ type Server struct {
 	RTMP   rtmp.Server
 }
 
-func NewStreamServer(pipeline stream.Pipeline, detector detection.Detector) (Server, error) {
-	router := router.NewRouter(pipeline, detector)
+func NewStreamServer(pipeline stream.Pipeline) (Server, error) {
+	router := router.NewRouter(pipeline)
 
 	return Server{
 		Router: router,
