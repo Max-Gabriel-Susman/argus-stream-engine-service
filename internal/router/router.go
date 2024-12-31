@@ -10,9 +10,8 @@ type Router struct {
 	Detector detection.Detector
 }
 
-func NewRouter(pipeline stream.Pipeline, detector detection.Detector) Router {
+func NewRouter(pipeline stream.Pipeline) Router {
 	return Router{
 		Pipeline: pipeline,
-		Detector: detector,
 	}
 }
