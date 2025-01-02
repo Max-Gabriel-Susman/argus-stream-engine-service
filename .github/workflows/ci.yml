@@ -28,9 +28,9 @@ jobs:
       run: |
         make deps
 
-    - name: Build Pipeline Library
-      run: |
-        make build
+    # - name: Build Pipeline Library
+    #   run: |
+    #     make build
         
     - name: Test the application
       run: |
