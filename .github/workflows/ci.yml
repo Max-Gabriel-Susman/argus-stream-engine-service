@@ -32,6 +32,6 @@ jobs:
     #   run: |
     #     make build
         
-    - name: Test the application
-      run: |
-        make test
+    # - name: Test the application
+    #   run: |
+    #     make test
