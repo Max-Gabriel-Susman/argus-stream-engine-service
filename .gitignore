@@ -12,4 +12,6 @@ argus-stream-engine-service-deployment.yaml
 dev-notes.txt
 vendor/
 pipeline.o
-libpipeline.a
+libpipeline.
+gst_pipeline.o
+libgst_pipeline.a
