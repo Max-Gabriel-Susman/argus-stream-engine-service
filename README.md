@@ -6,7 +6,12 @@ The Argus Stream Engine Service manages RTMP streams between ingress and egress 
 
 install dependencies:
 ```
-make deps
+make deps 
+```
+
+NOTE: The desired nginx.conf is included at the root level of this repository for reference; check or edit /etc/nginx/nginx.conf accordingly. Then:
+```
+make prep
 ```
 
 build pipeline library binaries:
@@ -23,11 +28,3 @@ clear binaries:
 ```
 make clean
 ```
-
-## TODOs
-
-1. Upgrade build system to a CMake Implementation
-
-2. Dockerize the service
-
-3. Provide instructions for deployment on and consumption from EKS

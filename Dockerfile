@@ -1,25 +1,21 @@
-FROM golang:alpine AS builder
+# -----------------------------
+# Dockerfile for RTMP (Nginx)
+# -----------------------------
+FROM ubuntu:22.04
 
-# Copy the entire project into the container
-ADD . /app
+# Install Nginx + RTMP module
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends nginx libnginx-mod-rtmp && \
+    rm -rf /var/lib/apt/lists/*
 
-# Set the working directory to where your main Go file is located
-WORKDIR /app/cmd/argus-stream-engine-service
+# Copy our minimal RTMP config
+COPY nginx.conf /etc/nginx/nginx.conf
 
-# Build the Go application
-RUN go build -o /argus-stream-engine-service
-
-FROM alpine AS runner
-
-# Install necessary runtime dependencies
-RUN apk add --no-cache gcompat
-
-# Copy the built binary from the builder stage
-COPY --from=builder /argus-stream-engine-service /usr/bin/argus-stream-engine-service
-
-# Expose the ports used by your service
+# Expose port 1935 for RTMP
 EXPOSE 1935
-EXPOSE 443
 
-# Set the entry point to your application
-ENTRYPOINT ["/usr/bin/argus-stream-engine-service"]
+# (Optional) Expose 8080 if you enabled an HTTP server block in nginx.conf
+# EXPOSE 8080
+
+# Run Nginx in the foreground
+CMD ["nginx", "-g", "daemon off;"]

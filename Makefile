@@ -1,48 +1,41 @@
 
 deps: 
-	go get "github.com/Max-Gabriel-Susman/rtmp@v0.1.0"
-	go mod tidy
-	go mod vendor
-	git submodule update --init --recursive
+	sudo apt-get update
+	sudo apt-get install -y gstreamer1.0-tools gstreamer1.0-plugins-base \
+		gstreamer1.0-plugins-good gstreamer1.0-plugins-bad \
+		gstreamer1.0-plugins-ugly
+	sudo apt-get install -y ffmpeg
+	sudo apt-get install -y libnginx-mod-rtmp
+
+# build:
+# 	gcc -c -o cmd/argus-stream-engine-service/pipeline.o pipeline.c
+# 	ar rcs cmd/argus-stream-engine-service/libpipeline.a cmd/argus-stream-engine-service/pipeline.o
+
+build: 
+	gcc -c -o gst_pipeline.o gst_pipeline.c `pkg-config --cflags gstreamer-1.0`
+	ar rcs libgst_pipeline.a gst_pipeline.o
 
 
-build:
-	gcc -c -o internal/detection/detector.o internal/detection/libdetector/detector.c
-	ar rcs internal/detection/libdetector.a internal/detection/detector.o
-	gcc -c -o internal/stream/pipeline.o internal/stream/libpipeline/pipeline.c
-	ar rcs internal/stream/libpipeline.a internal/stream/pipeline.o
+# clean: 
+# 	rm cmd/argus-stream-engine-service/pipeline.o cmd/argus-stream-engine-service/libpipeline.a
 
 clean: 
-	rm internal/stream/pipeline.o \
-	internal/stream/libpipeline.a \
-	internal/detection/detector.o \
-	internal/detection/libdetector.a
-	rm -r vendor
-	rm go.sum
+	rm gst_pipeline.o libgst_pipeline.a
 
 run: 
-	go run cmd/argus-stream-engine-service/main.go
-
-yolo:
-	make clean 
-	make deps
-	make build 
-	make run
+	go run main.go
 
 test: 
 	go test ./...
 
-stream: 
-	ffmpeg -re -i imagery/input.mp4 -c:v libx264 -preset fast -b:v 1000k -maxrate 1000k -bufsize 2000k -c:a aac -ar 44100 -b:a 128k -f flv rtmp://localhost/live/stream_key
+stream:
+	ffmpeg -re -i imagery/input.mp4 \
+    -c:v libx264 -preset veryfast -c:a aac -ar 44100 \
+    -f flv rtmp://localhost/outgoing/myRestream
 
-# build: 
-# 	docker build -t argus-stream-engine-service .
+dkrbld:
+	docker build -t argus-stream-engine-service .
 
-# run: 
-# 	docker run -p 1935:1935 argus-stream-engine-service
+dkrrn:
+	docker run --name argus-stream-engine-service -p 1935:1935 argus-stream-engine-service
 
-tag: 
-	docker tag argus-stream-engine-service brometheus/argus-stream-engine-service:latest
-
-push: 
-	docker push brometheus/argus-stream-engine-service:latest
