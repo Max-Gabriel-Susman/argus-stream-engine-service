@@ -39,3 +39,6 @@ dkrbld:
 dkrrn:
 	docker run --name argus-stream-engine-service -p 1935:1935 argus-stream-engine-service
 
+prep:
+	sudo nginx -t 
+	sudo systemctl restart nginx

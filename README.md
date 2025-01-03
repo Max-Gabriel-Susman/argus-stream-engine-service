@@ -1,8 +1,20 @@
 # Argus Stream Engine Service
 
-The Argus Stream Engine Service manages RTMP streams between ingress and egress clients. 
+The Argus Stream Engine Service manages RTMP streams between ingress and egress clients.
 
-## Usage 
+## Build and run As a Container
+
+build docker image for the service:
+```
+docker build -t argus-stream-engine-service .
+```
+
+run docker container for the service:
+```
+docker run --name argus-stream-engine-service -p 1935:1935 argus-stream-engine-service
+```
+
+## Build and run from Source 
 
 install dependencies:
 ```
@@ -21,7 +33,7 @@ make build
 
 run application: 
 ```
-go run main.go
+make run
 ```
 
 clear binaries:
