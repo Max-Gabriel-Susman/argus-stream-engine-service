@@ -1,14 +1,9 @@
 deps:
-	# Enable the "universe" repository
 	sudo apt-get update
 	sudo apt-get install -y software-properties-common
 	sudo add-apt-repository universe
 	sudo apt-get update
-
-	# Install build-essential
 	sudo apt-get install -y build-essential
-
-	# User-level GStreamer plugins and other packages from your original deps
 	sudo apt-get install -y \
 		gstreamer1.0-tools \
 		gstreamer1.0-plugins-base \
@@ -17,8 +12,6 @@ deps:
 		gstreamer1.0-plugins-ugly \
 		ffmpeg \
 		libnginx-mod-rtmp
-
-	# Development headers needed for GStreamer C code
 	sudo apt-get install -y \
 		libunwind-dev \
 		libgstreamer1.0-dev \
