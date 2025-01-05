@@ -21,21 +21,21 @@ jobs:
         with:
           go-version: 1.23.4
 
-      - name: Enable Universe Repository
+      - name: Install Dependencies
         run: |
+          # Enable universe repo
           sudo apt-get update
           sudo apt-get install -y software-properties-common
           sudo add-apt-repository universe
           sudo apt-get update
 
-      - name: Install build tools
-        run: sudo apt-get install -y build-essential
+          # Install build tools
+          sudo apt-get install -y build-essential
 
-      - name: Install Dependencies
-        run: make deps
+          # Install the Makefile dependencies
+          make deps
 
-      - name: Install More Deps
-        run: |
+          # Finally, install dev headers
           sudo apt-get update
           sudo apt-get install -y \
             libunwind-dev \
