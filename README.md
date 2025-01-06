@@ -2,19 +2,7 @@
 
 The Argus Stream Engine Service manages RTMP streams between ingress and egress clients.
 
-## Build and run As a Container
-
-build docker image for the service:
-```
-docker build -t argus-stream-engine-service .
-```
-
-run docker container for the service:
-```
-docker run --name argus-stream-engine-service -p 1935:1935 argus-stream-engine-service
-```
-
-## Build and run from Source 
+## Usage
 
 install dependencies:
 ```
@@ -36,7 +24,11 @@ run application:
 make run
 ```
 
-clear binaries:
+stream to the service:
 ```
-make clean
+make stream
 ```
+ingest the stream with VLC:
+    1. Media > Open Network Stream 
+
+    2. Use `rtmp://localhost/outgoing/myRestream` as the network URL

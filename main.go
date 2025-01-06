@@ -28,14 +28,6 @@ func main() {
 
 	fmt.Println("Starting RTMP forwarding pipeline...")
 
-	// For demo, we'll stop after 60 seconds
-	// go func() {
-	// 	time.Sleep(60 * time.Second)
-	// 	fmt.Println("Stopping pipeline...")
-	// 	C.stop_pipeline()
-	// }()
-
-	// This blocks until we call stop_pipeline or pipeline hits error/EOS
 	C.start_rtmp_forwarding(cPipeline)
 
 	fmt.Println("Pipeline stopped. Exiting.")
